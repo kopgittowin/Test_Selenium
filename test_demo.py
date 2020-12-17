@@ -56,5 +56,22 @@ def test_login():
     sleep(3)
 
 
-def test_pytet():
-    pass
+def test_addmember():
+    driver = webdriver.Chrome()
+    driver.implicitly_wait(3)
+    driver.get('https://work.weixin.qq.com/wework_admin/loginpage_wx')
+    with open('data.yml', encoding='utf_8') as f:
+        yaml_data = yaml.safe_load(f)
+    for cookie in yaml_data:
+        driver.add_cookie(cookie)
+    driver.get('https://work.weixin.qq.com/wework_admin/frame#index')
+    driver.find_element_by_id('menu_contacts').click()
+    driver.find_element_by_link_text('添加成员').click()
+    driver.find_element_by_id('username').send_keys('黄一')
+    driver.find_element_by_id('memberAdd_acctid').send_keys('kopnum1')
+    driver.find_element_by_id('memberAdd_phone').send_keys(13611223344)
+    driver.find_element_by_link_text('保存').click()
+    sleep(3)
+    driver.quit()
+
+# $x('//*[@id="js_contacts47"]//a[1]')[13]
