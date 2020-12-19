@@ -5,6 +5,8 @@ from time import sleep
 import yaml
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 
 class TestDemo():
@@ -66,12 +68,24 @@ def test_addmember():
         driver.add_cookie(cookie)
     driver.get('https://work.weixin.qq.com/wework_admin/frame#index')
     driver.find_element_by_id('menu_contacts').click()
-    driver.find_element_by_link_text('添加成员').click()
-    driver.find_element_by_id('username').send_keys('黄一')
-    driver.find_element_by_id('memberAdd_acctid').send_keys('kopnum1')
-    driver.find_element_by_id('memberAdd_phone').send_keys(13611223344)
-    driver.find_element_by_link_text('保存').click()
-    sleep(3)
-    driver.quit()
-
-# $x('//*[@id="js_contacts47"]//a[1]')[13]
+    ele = (By.CSS_SELECTOR, '.ww_operationBar .js_add_member')
+    WebDriverWait(driver, 10).until(expected_conditions.element_to_be_clickable(ele))
+    while True:
+        driver.find_element(*ele).click()
+        element = driver.find_elements_by_id('username')
+        if len(element) > 0:
+            break
+    driver.find_element_by_id('username').send_keys('黄二')
+    driver.find_element_by_id('memberAdd_acctid').send_keys('kopnum2')
+    driver.find_element_by_id('memberAdd_phone').send_keys(13611223345)
+    driver.find_element_by_css_selector('.js_btn_save').click()
+    sleep(2)
+    eles = driver.find_elements_by_css_selector('.member_colRight_memberTable_td:nth-child(2)')
+    name_list = []
+    for value in eles:
+        # 获取元素属性title的值，存入list内
+        # print(value.get_attribute("title"))
+        name_list.append(value.get_attribute("title"))
+    # 断言目标名字是否在列表内
+    assert "黄二" in name_list
+    print(name_list)
